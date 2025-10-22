@@ -1,23 +1,25 @@
+# Usa OpenJDK 17, compatible con versiones modernas de Minecraft (1.16+)
 FROM openjdk:17-jdk-slim
 
-# Define variables
-ENV MINECRAFT_VERSION=1.20.1
-ENV SERVER_JAR=minecraft_server.${MINECRAFT_VERSION}.jar
+# Define el directorio de trabajo
 ENV SERVER_DIR=/minecraft
 
-# Crear directorio
+# Crea el directorio de trabajo
 RUN mkdir -p ${SERVER_DIR}
 WORKDIR ${SERVER_DIR}
 
-# Descargar el jar del servidor de Minecraft
-RUN apt-get update && apt-get install -y curl && \
-    curl -o ${SERVER_JAR} https://launcher.mojang.com/v1/objects/9c918ce0c9f678cbd2b798edc2cc74e30b057a59/server.jar
+# Instala curl para descargar archivos
+RUN apt-get update && apt-get install -y curl
 
-# Copiar archivos de configuración
+# Descarga el archivo server.jar para Minecraft 1.16.5
+RUN curl -o server.jar https://launcher.mojang.com/v1/objects/1b557e7b033b583cd9f66746b7a9ab1ec1673ced/server.jar
+
+# Copia archivos de configuración
 COPY eula.txt .
 COPY server.properties .
 
+# Expone el puerto por defecto del servidor de Minecraft
 EXPOSE 25565
 
-# Comando de inicio
-CMD ["java", "-Xmx2G", "-Xms1G", "-jar", "minecraft_server.1.20.1.jar", "nogui"]
+# Comando para iniciar el servidor
+CMD ["java", "-Xmx2G", "-Xms1G", "-jar", "server.jar", "nogui"]
